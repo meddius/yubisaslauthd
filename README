@@ -1,0 +1,45 @@
+DESCRIPTION
+
+yubisaslauthd is a replacement for saslauthd for the single purpose of
+providing two-factor Yubikey-based authentication with LDAP.
+
+BEHAVIOR
+
+The username is the DN of the user to validate. The password is the user's
+password concatenated with a Yubikey OTP. Realm and service are ignored.
+yubisaslauthd validates the OTP against the Yubikey API, verifies that the
+Yubikey ID is associated with the given user, and verifies the password. The
+Yubikey ID to user mappings and the password hashes are stored in LDAP.
+Password hashes use crypt(3).
+
+For use with LDAP, each user's userPassword attribute should be set to
+{SASL}<dn>, where <dn> is the full DN of the user. The user's actual password
+should be stored in crypt(3) form in a separate attribute, specified as
+LDAP_PASSWD_ATTR.
+
+CONFIGURATION
+
+Items you may want to configure:
+
+Socket path: SOCK_PATH in yubisaslauthd.py. Defaults to /var/run/saslauthd/mux,
+  the standard saslauthd path on Debian/Ubuntu.
+Number of preforked workers: NUM_WORKERS in yubisaslauthd.py. Defaults to 5;
+  may need increasing if you have a slow LDAP server, slow Yubikey API, and/or
+  a high volume of auth requests.
+API Client ID: CLIENT_ID in validate.py.
+API Client Key: CLIENT_KEY in validate.py. Set these to the ID and key for API
+  access.
+LDAP Yubikey attribute: LDAP_YUBI_ATTR in validate.py. This is the user
+  attribute that contains the user's Yubikey ID.
+LDAP password attribute: LDAP_PASSWD_ATTR in validate.py. This is the user
+  attribute that contains the user's hashed password.
+LDAP bind credentials: By default, yubisaslauthd connects using a unix socket
+  (ldapi:///) and uses EXTERNAL authentication. If you need a different method,
+  modify the ldap_connect method in validate.py.
+Yubikey API URL: API_URLS in yubico/yubico.py.
+Yubikey API trusted CAs: CA_CERTS in yubico/httplib_ssl.py.
+
+OTHER
+
+The Yubikey API library is taken from python-yubico-client, at
+<https://github.com/Kami/python-yubico-client>.
