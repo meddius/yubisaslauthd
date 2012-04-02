@@ -41,5 +41,8 @@ Yubikey API trusted CAs: CA_CERTS in yubico/httplib_ssl.py.
 
 OTHER
 
+yubi.schema includes a sample LDAP objectClass 'yubikeyOwner' that defines the
+'yubikeyID' and 'passwordFactor' attributes that are used by default.
+
 The Yubikey API library is taken from python-yubico-client, at
 <https://github.com/Kami/python-yubico-client>.
